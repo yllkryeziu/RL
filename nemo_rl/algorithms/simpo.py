@@ -178,11 +178,12 @@ class SimPOLossFn(PreferenceLoss):
         rewards_chosen, rewards_rejected = self.split_output_tensor(rewards)
 
         # Compute SimPO loss with margin
-        # L = -log(sigmoid(beta * (r_chosen - r_rejected - gamma)))
-        rewards_delta = rewards_chosen - rewards_rejected - self.gamma
-
+        # Paper formula: L = -log(sigmoid(beta * r_chosen - beta * r_rejected - gamma))
+        # Note: gamma is NOT multiplied by beta (see arxiv:2405.14734 Eq. 6)
         per_sample_loss = (
-            -torch.nn.functional.logsigmoid(self.beta * rewards_delta)
+            -torch.nn.functional.logsigmoid(
+                self.beta * (rewards_chosen - rewards_rejected) - self.gamma
+            )
             * sample_mask[::2]
         )
 
