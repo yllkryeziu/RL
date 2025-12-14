@@ -36,15 +36,15 @@ megatron_core_package_name = "megatron.core"
 
 # Path for the C++ extension's source file, relative to setup.py
 # This path is taken from your original setup.py
-megatron_core_cpp_extension_source_file = "megatron/core/datasets/helpers.cpp"
+megatron_core_cpp_extension_source_file = "Megatron-LM/megatron/core/datasets/helpers.cpp"
 
 # Check if the main directory for the megatron.core Python package exists
 if os.path.exists(megatron_core_python_package_source_dir):
-    # Add Python package 'megatron.core'
-    final_packages.append(megatron_core_package_name)
-    final_package_dir[megatron_core_package_name] = (
-        megatron_core_python_package_source_dir
-    )
+    # Find all packages under megatron including sub-packages
+    # Use find_namespace_packages since megatron is a namespace package (no __init__.py)
+    core_packages = setuptools.find_namespace_packages(where="Megatron-LM")
+    final_packages.extend(core_packages)
+    final_package_dir[""] = "Megatron-LM"
 
     # If the Python package is being added, then check if its C++ extension can also be added
     # This requires the specific C++ source file to exist

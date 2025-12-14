@@ -93,8 +93,11 @@ if os.path.exists(bridge_src_dir):
         )
 
 if os.path.exists(bridge_src_dir):
-    final_packages.append(bridge_package_name)
-    final_package_dir[bridge_package_name] = bridge_src_dir
+    # Find all packages under megatron.bridge including sub-packages
+    # Use find_namespace_packages since megatron is a namespace package (no __init__.py)
+    bridge_subpackages = setuptools.find_namespace_packages(where="Megatron-Bridge/src")
+    final_packages.extend(bridge_subpackages)
+    final_package_dir[""] = "Megatron-Bridge/src"
 
 setuptools.setup(
     name="megatron-bridge",
